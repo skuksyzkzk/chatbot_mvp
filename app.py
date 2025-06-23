@@ -20,7 +20,8 @@ if "api_key" not in st.session_state or not st.session_state["api_key"]:
     st.info("먼저 OpenAI API 키를 입력해야 챗봇을 사용할 수 있습니다.")
     st.stop()
 
-openai.api_key = st.session_state["api_key"]
+# 최신 openai 방식: 클라이언트 객체 생성
+client = openai.OpenAI(api_key=st.session_state["api_key"])
 
 # 3. 대화 세션 관리
 if "messages" not in st.session_state:
@@ -36,7 +37,7 @@ user_input = st.chat_input("메시지를 입력하세요...")
 
 def generate_response(messages):
     # OpenAI Chat API 호출
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",  # 또는 gpt-4
         messages=messages
     )
