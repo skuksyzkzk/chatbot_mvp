@@ -1,8 +1,13 @@
 import streamlit as st
+import openai
+import os
 
 st.set_page_config(page_title="AI 챗봇", page_icon="🤖")
 
-st.title("🤖 간단한 AI 챗봇")
+st.title("🤖 GPT 기반 AI 챗봇")
+
+# OpenAI API 키 입력 (보안상 환경변수 사용 권장)
+openai.api_key = st.secrets["OPENAI_API_KEY"] if "OPENAI_API_KEY" in st.secrets else os.getenv("OPENAI_API_KEY")
 
 # 세션 상태에 대화 기록 저장
 if "messages" not in st.session_state:
@@ -16,20 +21,19 @@ for msg in st.session_state["messages"]:
 # 사용자 입력 받기
 user_input = st.chat_input("메시지를 입력하세요...")
 
-# 간단한 응답 생성 함수 (패턴 매칭 또는 고정 응답)
-def generate_response(user_message):
-    user_message = user_message.lower()
-    if "안녕" in user_message:
-        return "안녕하세요! 무엇을 도와드릴까요?"
-    elif "이름" in user_message:
-        return "저는 간단한 AI 챗봇입니다."
-    elif "고마워" in user_message:
-        return "천만에요!"
-    else:
-        return "죄송해요, 아직 그 질문에는 답변할 수 없어요."
+def generate_response(messages):
+    # OpenAI Chat API 호출
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # 또는 gpt-4
+        messages=messages
+    )
+    return response.choices[0].message.content
 
 # 입력이 있으면 대화 기록에 추가 및 응답 생성
 if user_input:
     st.session_state["messages"].append({"role": "user", "content": user_input})
-    response = generate_response(user_input)
+    # OpenAI API에 전체 대화 내역 전달
+    response = generate_response([
+        {"role": m["role"], "content": m["content"]} for m in st.session_state["messages"]
+    ])
     st.session_state["messages"].append({"role": "assistant", "content": response}) 
