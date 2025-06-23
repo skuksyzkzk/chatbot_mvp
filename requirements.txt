@@ -1,2 +1,4 @@
 streamlit
 openai
+chatterbot
+chatterbot_corpus
