@@ -32,5 +32,4 @@ def generate_response(user_message):
 if user_input:
     st.session_state["messages"].append({"role": "user", "content": user_input})
     response = generate_response(user_input)
-    st.session_state["messages"].append({"role": "assistant", "content": response})
-    st.experimental_rerun()  # 새 메시지 바로 반영 
+    st.session_state["messages"].append({"role": "assistant", "content": response}) 
