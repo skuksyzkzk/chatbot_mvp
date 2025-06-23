@@ -6,10 +6,23 @@ st.set_page_config(page_title="AI 챗봇", page_icon="🤖")
 
 st.title("🤖 GPT 기반 AI 챗봇")
 
-# OpenAI API 키 입력 (보안상 환경변수 사용 권장)
-openai.api_key = st.secrets["OPENAI_API_KEY"] if "OPENAI_API_KEY" in st.secrets else os.getenv("OPENAI_API_KEY")
+# 1. API 키 입력창
+api_key = st.text_input(
+    "OpenAI API 키를 입력하세요 (sk-로 시작)",
+    type="password",
+    value=st.session_state.get("api_key", "")
+)
+if api_key:
+    st.session_state["api_key"] = api_key
 
-# 세션 상태에 대화 기록 저장
+# 2. API 키가 없으면 안내 메시지
+if "api_key" not in st.session_state or not st.session_state["api_key"]:
+    st.info("먼저 OpenAI API 키를 입력해야 챗봇을 사용할 수 있습니다.")
+    st.stop()
+
+openai.api_key = st.session_state["api_key"]
+
+# 3. 대화 세션 관리
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
